@@ -222,7 +222,6 @@ export default {
         password: ''
       },
       isPwd: true,
-      logging: false,
       loading: false,
       tab: 'btn1'
     }
@@ -234,13 +233,12 @@ export default {
       this.loading = true
 
       try {
-        var response = await this.$axios.post('/landix/login/', this.user)
+        var response = await this.$axios.post('/login/', this.user)
 
         this.$store.commit('setUser', response.data)
 
-        this.$router.push('/dashboards')
+        this.$router.push('/index')
 
-        this.logging = true
         this.loading = false
 
         this.$q.notify({
@@ -249,7 +247,6 @@ export default {
           message: 'Login realizado com Sucesso!'
         })
       } catch (error) {
-        this.logging = false
         this.loading = false
       }
     },
@@ -258,13 +255,15 @@ export default {
       this.loading = true
 
       try {
-        var response = await this.$axios.post('/landix/login/', this.user)
+        const response = await this.$axios.post('/singup/', this.newUser)
+
+        this.user = this.newUser
+        this.onLogin()
 
         this.$store.commit('setUser', response.data)
 
-        this.$router.push('/dashboards')
+        this.$router.push('/index')
 
-        this.logging = true
         this.loading = false
 
         this.$q.notify({
@@ -273,7 +272,6 @@ export default {
           message: 'Login realizado com Sucesso!'
         })
       } catch (error) {
-        this.logging = false
         this.loading = false
       }
     }
