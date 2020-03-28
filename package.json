@@ -9,12 +9,15 @@
   "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.vue src",
-    "test": "echo \"No test specified\" && exit 0"
+    "test": "echo \"No test specified\" && exit 0",
+    "build:prod": "cross-env MY_API=http://localhost:4000/ quasar build",
+    "build:test": "cross-env MY_API=http://falta_ambiente_de_teste/ quasar build"
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
     "axios": "^0.18.1",
     "quasar": "^1.0.0",
+    "cross-env": "^5.2.0",
     "vue-i18n": "^8.0.0",
     "vue-tilt.js": "^1.1.1"
   },

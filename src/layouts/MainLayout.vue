@@ -34,12 +34,29 @@
 
 <script>
 import EssentialLink from 'components/EssentialLink'
+import { EventBus } from '../functions/event_bus.js'
 
 export default {
   name: 'MainLayout',
 
   components: {
     EssentialLink
+  },
+
+  created () {
+    if (!localStorage.getItem('access_token')) {
+      this.$router.push('/')
+    }
+  },
+
+  beforeCreate () {
+    EventBus.$on('showNotify', (notification) => {
+      this.showNotify(notification)
+    })
+
+    EventBus.$on('expiredToken', () => {
+      this.logoutNow()
+    })
   },
 
   data () {
@@ -83,6 +100,21 @@ export default {
           link: 'https://facebook.quasar.dev'
         }
       ]
+    }
+  },
+
+  methods: {
+    logoutNow () {
+      this.$q.localStorage.remove('access_token')
+      this.$router.push('/')
+    },
+    showNotify (notification) {
+      this.$q.notify({
+        color: notification.color,
+        textColor: 'white',
+        icon: notification.icon,
+        message: this.$t(notification.message)
+      })
     }
   }
 }

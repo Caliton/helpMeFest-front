@@ -12,12 +12,10 @@ module.exports = function (ctx) {
       'tilt'
     ],
 
-    // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
     css: [
       'app.styl'
     ],
 
-    // https://github.com/quasarframework/quasar/tree/dev/extras
     extras: [
       // 'ionicons-v4',
       // 'mdi-v4',
@@ -31,7 +29,6 @@ module.exports = function (ctx) {
       'material-icons' // optional, you are not bound to it
     ],
 
-    // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
     framework: {
       iconSet: 'material-icons', // Quasar icon set
       lang: 'en-us', // Quasar language pack
@@ -106,11 +103,11 @@ module.exports = function (ctx) {
       ],
 
       directives: [
-        'Ripple'
+        'Ripple',
+        'ClosePopup'
       ],
 
-      // Quasar plugins
-      plugins: []
+      plugins: ['Notify', 'Cookies', 'LocalStorage', 'SessionStorage']
     },
 
     // https://quasar.dev/quasar-cli/cli-documentation/supporting-ie
@@ -119,6 +116,9 @@ module.exports = function (ctx) {
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
       vueRouterMode: 'hash', // available values: 'hash', 'history'
+      env: ctx.dev
+        ? { API: JSON.stringify('https://my-json-server.typicode.com/caliton/endpoints/') }
+        : { API: JSON.stringify(process.env.MY_API) },
 
       // rtl: false, // https://quasar.dev/options/rtl-support
       // showProgress: false,
@@ -129,7 +129,6 @@ module.exports = function (ctx) {
       // preloadChunks: false,
       // extractCSS: false,
 
-      // https://quasar.dev/quasar-cli/cli-documentation/handling-webpack
       extendWebpack (cfg) {
         cfg.module.rules.push({
           enforce: 'pre',

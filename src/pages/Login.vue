@@ -17,7 +17,7 @@
                 class="container-login"
               >
                 <div class="login-logo">
-                  <span href="starter2.html">HelpMe<b>Fest</b></span>
+                  <span href="starter2.html">HelpMe<span class="name-login">Fest</span></span>
 
                   <q-tab-panels
                     v-model="tab"
@@ -208,6 +208,8 @@
 </template>
 
 <script>
+import { EventBus } from '../functions/event_bus.js'
+
 export default {
   name: 'Login',
   data () {
@@ -227,6 +229,23 @@ export default {
     }
   },
 
+  created () {
+    console.log('cade essa merda do token: ', localStorage.getItem('access_token'))
+    if (localStorage.getItem('access_token')) {
+      this.$router.push('/events')
+    }
+  },
+
+  beforeCreate () {
+    EventBus.$on('showNotify', (notification) => {
+      this.showNotify(notification)
+    })
+  },
+
+  beforeDestroy () {
+    EventBus.$off('showNotify')
+  },
+
   methods: {
     // submit for the login form
     async onLogin () {
@@ -237,7 +256,7 @@ export default {
 
         this.$store.commit('setUser', response.data)
 
-        this.$router.push('/index')
+        this.$router.push('/')
 
         this.loading = false
 
@@ -282,6 +301,11 @@ export default {
 
 <style lang="stylus">
 @import url('https://fonts.googleapis.com/css?family=Montserrat:700|Poppins:400,500,700&display=swap');
+
+@font-face {
+  font-family: customfont;
+  src: url(../css/fonts/VeganStylePersonalUse-5Y58.ttf);
+}
 
 .login-page
   font-family: 'Poppins', sans-serif;
@@ -388,6 +412,10 @@ export default {
     max-width: 50%;
     transition .3s
     margin: 0 auto
+
+  .name-login
+    font-family: customfont
+    font-size: 1.8rem
 
   @media (max-width: 1440px)
     .container-login
