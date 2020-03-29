@@ -17,7 +17,7 @@ export default async ({ Vue }) => {
     const token = localStorage.getItem('access_token')
 
     if (token) {
-      config.headers.Authorization = `EP2S ${token}`
+      config.headers.Authorization = `Bearer ${token}`
     }
 
     return config
@@ -32,27 +32,28 @@ export default async ({ Vue }) => {
       color: 'red',
       textColor: 'white',
       icon: 'error_outline',
-      message: 'unknowError'
+      message: 'Alguma coisa aconteceu de ruim :('
     }
 
     if (error.response) {
       const status = error.response.status
 
       if (status === REQUEST.LOGIN_FAILED) {
-        notification.message = 'invalidUserPass'
+        notification.message = 'Login Invalido :('
+        EventBus.$emit('expiredToken')
       } else if (status === REQUEST.EXPIRED_TOKEN) {
-        notification.message = 'expiredLogin'
+        notification.message = 'Seu acesso esta espirado'
         EventBus.$emit('expiredToken')
       } else if (status === REQUEST.UNAUTHORIZED) {
         notification.message = 'loginUnauthorized'
         EventBus.$emit('expiredToken')
       } else if (status === REQUEST.NOT_FOUND) {
-        notification.message = 'operationFailed'
+        notification.message = 'Uhm... não consegui encontrar o que buscava :('
       } else if (status === REQUEST.SERVER_ERROR) {
-        notification.message = 'serverError'
+        notification.message = 'Erro interno no servidor'
       }
     } else {
-      notification.message = 'connectionError'
+      notification.message = 'Erro na conexão'
     }
 
     EventBus.$emit('showNotify', notification)

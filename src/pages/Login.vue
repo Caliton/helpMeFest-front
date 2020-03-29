@@ -30,6 +30,7 @@
                       <q-form @submit="onLogin" class="login-form">
                         <q-input
                           v-model="user.email"
+                          type="email"
                           input-style="color: #6F6F6F"
                           color="primary"
                           rounded
@@ -126,6 +127,7 @@
                           input-style="color: #6F6F6F"
                           color="primary"
                           rounded
+                          type="email"
                           standout="bg-grey-3 text-black"
                           label="Email"
                           lazy-rules
@@ -221,7 +223,10 @@ export default {
       newUser: {
         name: '',
         email: '',
-        password: ''
+        password: '',
+        isGuest: false,
+        profileId: 2,
+        departamentId: 2
       },
       isPwd: true,
       loading: false,
@@ -230,7 +235,6 @@ export default {
   },
 
   created () {
-    console.log('cade essa merda do token: ', localStorage.getItem('access_token'))
     if (localStorage.getItem('access_token')) {
       this.$router.push('/events')
     }
@@ -252,18 +256,17 @@ export default {
       this.loading = true
 
       try {
-        var response = await this.$axios.post('/login/', this.user)
+        var response = await this.$axios.post('/user/login/', this.user)
+        localStorage.setItem('access_token', response.data.token)
+        localStorage.setItem('userName', response.data.name)
 
-        this.$store.commit('setUser', response.data)
-
-        this.$router.push('/')
+        this.$router.push('/events')
 
         this.loading = false
-
         this.$q.notify({
           color: 'positive',
           type: 'positive',
-          message: 'Login realizado com Sucesso!'
+          message: 'Seja Bem Vindo!'
         })
       } catch (error) {
         this.loading = false
@@ -274,25 +277,24 @@ export default {
       this.loading = true
 
       try {
-        const response = await this.$axios.post('/singup/', this.newUser)
+        await this.$axios.post('/user/', this.newUser)
 
         this.user = this.newUser
         this.onLogin()
 
-        this.$store.commit('setUser', response.data)
-
-        this.$router.push('/index')
-
         this.loading = false
-
-        this.$q.notify({
-          color: 'positive',
-          type: 'positive',
-          message: 'Login realizado com Sucesso!'
-        })
       } catch (error) {
         this.loading = false
       }
+    },
+
+    showNotify (notification) {
+      this.$q.notify({
+        color: notification.color,
+        textColor: 'white',
+        icon: notification.icon,
+        message: notification.message
+      })
     }
 
   }

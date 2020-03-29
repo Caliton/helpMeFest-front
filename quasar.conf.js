@@ -9,12 +9,11 @@ module.exports = function (ctx) {
     boot: [
       'i18n',
       'axios',
-      'tilt'
+      'tilt',
+      'vMoment'
     ],
 
-    css: [
-      'app.styl'
-    ],
+    css: ['app.styl'],
 
     extras: [
       // 'ionicons-v4',
@@ -56,6 +55,7 @@ module.exports = function (ctx) {
         'QImg',
         'QLayout',
         'QList',
+        'QPagination',
         'QField',
         'QPage',
         'QPageContainer',
@@ -102,10 +102,7 @@ module.exports = function (ctx) {
         'QColor'
       ],
 
-      directives: [
-        'Ripple',
-        'ClosePopup'
-      ],
+      directives: ['Ripple', 'ClosePopup'],
 
       plugins: ['Notify', 'Cookies', 'LocalStorage', 'SessionStorage']
     },
@@ -117,7 +114,7 @@ module.exports = function (ctx) {
     build: {
       vueRouterMode: 'hash', // available values: 'hash', 'history'
       env: ctx.dev
-        ? { API: JSON.stringify('https://my-json-server.typicode.com/caliton/endpoints/') }
+        ? { API: JSON.stringify('http://localhost:5000/api/') }
         : { API: JSON.stringify(process.env.MY_API) },
 
       // rtl: false, // https://quasar.dev/options/rtl-support
@@ -217,13 +214,11 @@ module.exports = function (ctx) {
 
       packager: {
         // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
-
         // OS X / Mac App Store
         // appBundleId: '',
         // appCategoryType: '',
         // osxSign: '',
         // protocol: 'myapp://path',
-
         // Windows only
         // win32metadata: { ... }
       },
