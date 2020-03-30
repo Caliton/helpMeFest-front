@@ -116,9 +116,13 @@ export default {
   methods: {
     async getEvents () {
       try {
+        console.log('Merda merda merda')
+
         this.loading = true
+        this.data = []
         const result = await this.$axios.get(this.endpoint, this.dataEndpoint)
         this.data = result.data
+
         this.loading = false
       } catch (e) {
         this.loading = false

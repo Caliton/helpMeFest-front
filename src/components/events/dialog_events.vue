@@ -110,6 +110,7 @@ export default {
 
       id: 0,
       guests: [],
+      userId: localStorage.getItem('userId'),
 
       dragging: false
     }
@@ -122,7 +123,7 @@ export default {
 
     add () {
       this.id++
-      this.guests.push({ id: this.id, name: '', relationShip: '' })
+      this.guests.push({ id: this.id, name: '', relationShip: '', relatedUserId: this.userId, enumCrud: 67 })
     },
 
     onShowModal (event) {
@@ -136,8 +137,10 @@ export default {
 
     async getGuests (events) {
       try {
-        const result = await this.$axios.get(`/Event/${events.id}?userId=${localStorage.getItem('userId')}`)
+        this.event = events
+        const result = await this.$axios.get(`/Event/${events.id}?userId=${this.userId}`)
         console.log('result: ', result.data.guests)
+        this.guests = result.data.guests
       } catch (error) {
         console.log(error)
       }
@@ -146,12 +149,17 @@ export default {
     async confirm () {
       this.loading = true
 
-      // const subscription = {
-      //   idUser: localStorage.getItem('userId'),
-      //   guests: this.guests
-      // }
+      this.guests.forEach((item, i) => {
+        this.guests[i].id = 0
+      })
 
-      // await this.$axios.patch('/event/{id}'.replace('{id}', event.id), subscription)
+      const subscription = this.event
+
+      subscription.guests = this.guests
+      subscription.currentUserId = this.userId
+      console.log('bora ve', subscription)
+
+      await this.$axios.put('/event/{id}'.replace('{id}', this.event.id), subscription)
 
       this.loading = false
 

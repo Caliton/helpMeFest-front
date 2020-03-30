@@ -1,6 +1,6 @@
 <template>
-  <q-card class="my-card" flat bordered>
-    <q-card-section horizontal>
+  <q-card class="my-card">
+    <q-card-section horizontal :class="{'my-card-participate': isParticipate}" flat bordered @click="openDetailsEventParticipate">
       <q-card-section>
         <div class="text-overline"><q-icon size="sm" name="event" /> {{date | moment("DD-MM-YYYY, h:mm:ss a")}}</div>
         <div class="text-h5 q-mt-sm q-mb-xs">{{ title || 'Aqui fica o Título'}}</div>
@@ -41,6 +41,19 @@
       />
     </q-card-actions>
 
+    <q-dialog v-model="invite" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-icon size="2em" name="sentiment_dissatisfied" color="purple"/>
+          <span class="q-ml-sm">Deseja mesmo não participar do Evento?</span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat no-caps label="Vou pensar melhor..." color="grey" v-close-popup @click="isParticipate = true" />
+          <q-btn flat no-caps label="Não quero mais!" color="negative" @click="cancelParticipate" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-card>
 </template>
 
@@ -84,7 +97,16 @@ export default {
 
   data () {
     return {
-      isParticipate: this.data.isParticipating
+      isParticipate: this.data.isParticipating,
+      invite: false
+    }
+  },
+
+  watch: {
+    isParticipate: function (value) {
+      if (!value) {
+        this.invite = true
+      }
     }
   },
 
@@ -97,6 +119,14 @@ export default {
 
     openEditEvent () {
       EventBus.$emit('on-edit-event', this.data)
+    },
+
+    openDetailsEventParticipate () {
+      EventBus.$emit('on-participate-event', this.data)
+    },
+
+    cancelParticipate () {
+      EventBus.$emit('on-cancel-participate', this.data)
     }
   }
 }
@@ -107,4 +137,7 @@ export default {
   border: none
   border-radius: 15px
   height: 216px
+
+.my-card-participate
+  cursor: pointer
 </style>

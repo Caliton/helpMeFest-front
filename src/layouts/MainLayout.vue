@@ -7,17 +7,20 @@
             <img src="../statics/default_user.png">
           </q-avatar>
           <q-menu anchor="bottom right" self="top left" content-class="main-menu">
-            <div class="text-center" style="padding-top: 1rem">
-              <q-avatar size="40px">
-                <img src="../statics/default_user.png">
-              </q-avatar>
-              <span style="display: block; margin: .5rem 0;">{{user.name}}</span>
+            <div class="text-center profile-menu">
+              <a href="/profile" class="link-menu">
+                <q-avatar size="40px">
+                  <img src="../statics/default_user.png">
+                </q-avatar>
+                <span style="display: block; margin: .5rem 0;">{{user.name}}</span>
+              </a>
             </div>
+
             <q-separator />
 
             <q-item clickable>
               <q-item-section>
-                <a href="/events" style="  display: block; text-decoration: none; white-space: nowrap; cursor: pointer; color: #6F6F6F;">
+                <a href="/events" class="link-menu">
                   Inicio
                 </a>
               </q-item-section>
@@ -25,7 +28,7 @@
 
             <q-item clickable>
              <q-item-section>
-                <a href="/managerevents" style="  display: block; text-decoration: none; white-space: nowrap; cursor: pointer; color: #6F6F6F;">
+                <a href="/managerevents" class="link-menu">
                   Gerenciar meus Eventos
                 </a>
              </q-item-section>
@@ -116,4 +119,18 @@ export default {
 .main-menu
   color #6F6F6F
   width: 15rem
+
+.link-menu
+  display: block
+  text-decoration: none
+  white-space: nowrap
+  cursor: pointer
+  color: #6F6F6F
+
+.profile-menu
+  padding-top: 1rem
+  cursor: pointer
+
+.profile-menu:hover
+  background-color #F1F1F1
 </style>
