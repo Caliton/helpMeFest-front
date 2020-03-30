@@ -37,7 +37,7 @@
         <div class="full-width row flex-center text-accent q-gutter-sm">
           <q-icon size="2em" name="sentiment_dissatisfied" />
           <span>
-            Uhm que pena não temos eventos... {{ message }}
+            Uhm que pena não temos eventos...
           </span>
           <q-icon size="2em" :name="filter ? 'filter_b_and_w' : icon" />
         </div>
@@ -118,7 +118,6 @@ export default {
       try {
         this.loading = true
         const result = await this.$axios.get(this.endpoint, this.dataEndpoint)
-        console.log('Olha isso: ', result)
         this.data = result.data
         this.loading = false
       } catch (e) {

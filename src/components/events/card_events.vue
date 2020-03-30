@@ -45,6 +45,8 @@
 </template>
 
 <script>
+import { EventBus } from 'src/functions/event_bus.js'
+
 export default {
   name: 'card-events',
 
@@ -88,15 +90,13 @@ export default {
 
   methods: {
     openDetailsEvent () {
-      console.log('Olha isso CACHORRO: ', this.data)
-
       if (!this.isParticipate) {
-        this.$root.$emit('on-participate-event', this.data)
+        EventBus.$emit('on-participate-event', this.data)
       }
     },
 
     openEditEvent () {
-      this.$root.$emit('on-edit-event', this.data)
+      EventBus.$emit('on-edit-event', this.data)
     }
   }
 }

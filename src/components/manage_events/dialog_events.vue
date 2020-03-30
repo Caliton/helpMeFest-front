@@ -96,20 +96,22 @@
 </template>
 
 <script>
+import { EventBus } from 'src/functions/event_bus.js'
+
 export default {
   name: 'edit-events',
 
   events: ['on-close'],
 
   created () {
-    this.$root.$on('on-edit-event', (event) => {
+    EventBus.$on('on-edit-event', (event) => {
       this.onShow = true
       this.event = event
     })
   },
 
   beforeDestroy () {
-    this.$root.$off('on-edit-event')
+    EventBus.$off('on-edit-event')
   },
 
   computed: {

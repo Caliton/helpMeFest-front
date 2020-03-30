@@ -74,9 +74,10 @@
 
 <script>
 import draggable from 'vuedraggable'
+import { EventBus } from 'src/functions/event_bus.js'
 
 export default {
-  name: 'info-events',
+  name: 'dialog-events',
 
   components: {
     'vue-draggable': draggable
@@ -85,14 +86,15 @@ export default {
   events: ['on-close'],
 
   created () {
-    this.$root.$on('on-participate-event', (event) => {
-      this.onShow = true
+    EventBus.$on('on-participate-event', (event) => {
       this.event = event
+      this.onShowModal()
+      this.getGuests(event)
     })
   },
 
   beforeDestroy () {
-    this.$root.$off('on-edit-event')
+    EventBus.$off('on-participate-event')
   },
 
   computed: {
@@ -123,13 +125,22 @@ export default {
       this.guests.push({ id: this.id, name: '', relationShip: '' })
     },
 
-    onShowModal () {
+    onShowModal (event) {
       this.onShow = true
     },
 
     onHideModal () {
       this.$emit('on-close')
       this.onShow = false
+    },
+
+    async getGuests (events) {
+      try {
+        const result = await this.$axios.get(`/Event/${events.id}?userId=${localStorage.getItem('userId')}`)
+        console.log('result: ', result.data.guests)
+      } catch (error) {
+        console.log(error)
+      }
     },
 
     async confirm () {
