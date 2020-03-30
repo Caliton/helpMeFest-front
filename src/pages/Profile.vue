@@ -7,6 +7,7 @@
         spinner-color="white"
         style="height: 640px; max-width: 640px; margin: 0 auto"
       />
+      <span class="text-center" style="display: block; font-size: 3rem; color: #35363A">Pagina em Construção</span>
     </div>
   </q-page>
 </template>
@@ -24,4 +25,5 @@ export default {
   min-height 80vmin
   border-radius: 6px
   background-color: #E4E8F4
+  font-family: customfont
 </style>

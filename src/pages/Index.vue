@@ -41,5 +41,5 @@ export default {
   width 90%
   min-height 80vmin
   border-radius: 6px
-  background-color: #eeeeee
+  background-color: #E4E8F4
 </style>
