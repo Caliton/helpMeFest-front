@@ -6,12 +6,7 @@ module.exports = function (ctx) {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://quasar.dev/quasar-cli/cli-documentation/boot-files
-    boot: [
-      'i18n',
-      'axios',
-      'tilt',
-      'vMoment'
-    ],
+    boot: ['i18n', 'axios', 'tilt', 'vMoment'],
 
     css: ['app.styl'],
 
@@ -94,6 +89,9 @@ module.exports = function (ctx) {
         'QTabPanels',
         'QTabPanel',
         'QInnerLoading',
+        'QTime',
+        'QDate',
+        'QPopupProxy',
         'QSpinnerGears',
         'QSpinnerRadio',
         'QSpinnerAudio',
@@ -112,7 +110,7 @@ module.exports = function (ctx) {
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
-      vueRouterMode: 'hash', // available values: 'hash', 'history'
+      vueRouterMode: 'history', // available values: 'hash', 'history'
       env: ctx.dev
         ? { API: JSON.stringify('http://localhost:5000/api/') }
         : { API: JSON.stringify(process.env.MY_API) },
@@ -125,17 +123,17 @@ module.exports = function (ctx) {
       // Options below are automatically set depending on the env, set them if you want to override
       // preloadChunks: false,
       // extractCSS: false,
-
+      devtool: 'source-map',
       extendWebpack (cfg) {
-        cfg.module.rules.push({
-          enforce: 'pre',
-          test: /\.(js|vue)$/,
-          loader: 'eslint-loader',
-          exclude: /node_modules/,
-          options: {
-            formatter: require('eslint').CLIEngine.getFormatter('stylish')
-          }
-        })
+        // cfg.module.rules.push({
+        //   enforce: 'pre',
+        //   test: /\.(js|vue)$/,
+        //   loader: 'eslint-loader',
+        //   exclude: /node_modules/,
+        //   options: {
+        //     formatter: require('eslint').CLIEngine.getFormatter('stylish')
+        //   }
+        // })
       }
     },
 

@@ -1,7 +1,7 @@
 <template>
   <q-page class="flex flex-center">
     <div class="events-page">
-      <list-events ref="listEvents" :endpoint="`/event/allbyuser/${idUser}`" />
+      <list-events ref="listEvents" title="Gerenciar meus Eventos" :endpoint="`/event/eventsByOwner/${idUser}`" :isOnwer="true" />
     </div>
     <dialog-events @on-close="refreshListEvents"/>
   </q-page>
@@ -9,10 +9,10 @@
 
 <script>
 import ListEvents from '../components/events/list_events.vue'
-import DialogEvents from '../components/events/dialog_events.vue'
+import DialogEvents from '../components/manage_events/dialog_events.vue'
 
 export default {
-  name: 'PageIndex',
+  name: 'manager-events',
 
   components: {
     'list-events': ListEvents,
@@ -27,12 +27,9 @@ export default {
 
   methods: {
     refreshListEvents () {
-      console.log('oi fui executado')
-
       this.$refs.listEvents.refresh()
     }
   }
-
 }
 </script>
 

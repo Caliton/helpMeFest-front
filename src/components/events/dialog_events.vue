@@ -8,24 +8,64 @@
       <q-card-section >
         <q-btn class="float-right" icon="close" flat round dense @click="canceled" />
         <div class="text-h2 q-mt-sm q-mb-xs" style="color: #6F6F6F">{{ event.name || 'Aqui fica o Título'}}</div>
-        <div class="text-caption text-grey" style="font-size: 1rem">
-          {{event.description || 'Aqui fica à descrição'}}
+        <div class="text-caption text-grey q-mt-lg" style="font-size: 1rem">
+          &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {{event.description || 'Aqui fica à descrição'}}
         </div>
       </q-card-section>
 
       <q-card-section>
-        <div class="text-overline"><q-icon size="sm" name="event" /> {{date | moment("DD-MM-YYYY")}}</div>
-        <div class="text-h5 q-ma-lg">Deseja participar deste Evento?</div>
-        <div class="check" style="transform: scale(2); margin-left: 1.5rem">
-          <input id="check" type="checkbox">
-          <label for="check"></label>
-        </div>
+        <div class="text-overline"><q-icon size="sm" name="event" /> {{event.dateInitial | moment("DD-MM-YYYY, h:mm:ss a")}}</div>
+        <q-btn class="btn btn-secondary button q-ma-sm" @click="add" no-caps color="cyan" size="sm" rounded label="Adicionar Convidado" />
+        <vue-draggable tag="ul" :list="guests" style="width: 100%" class="list-guest" handle=".handle">
+          <li
+            class="item-guest row"
+            v-for="(element, idx) in guests"
+            :key="element.id"
+          >
+            <q-input
+              class="col-md-6 q-mr-sm"
+              v-model="element.name"
+              input-style="color: #6F6F6F;"
+              color="primary"
+              rounded
+              dense
+              standout="bg-grey-3 text-black"
+              label="Convidado"
+              lazy-rules
+              :rules="[ val => val && val.length > 0 || 'Preencha com o nome de seu convidado']"
+            >
+              <template v-slot:prepend>
+                <q-icon name="eva-people" style="color: #6F6F6F !important" />
+              </template>
+            </q-input>
+
+            <q-input
+              v-model="element.relationShip"
+              style="max-width: 200px;"
+              class="col-md-3"
+              input-style="color: #6F6F6F;"
+              color="primary"
+              rounded
+              dense
+              standout="bg-grey-3 text-black"
+              label="relação"
+              lazy-rules
+              :rules="[ val => val && val.length > 0 || 'Preencha com o nome de seu convidado']"
+            >
+              <template v-slot:after>
+                <q-btn  flat round icon="fa fa-times close" style="color: #6F6F6F !important" @click="removeAt(idx)" />
+              </template>
+            </q-input>
+
+          </li>
+        </vue-draggable>
+
       </q-card-section>
 
       <q-card-section>
       </q-card-section>
       <q-card-actions style="margin: 10px;" class="text-teal container-card absolute-bottom-right">
-        <q-btn size="sm" rounded color="secondary" no-caps label="Concluir" @click="confirm" />
+        <q-btn color="light-blue" dense no-caps label="Quero Participar!" @click="confirm" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -33,30 +73,56 @@
 </template>
 
 <script>
+import draggable from 'vuedraggable'
+
 export default {
-  name: 'reception-login',
+  name: 'info-events',
+
+  components: {
+    'vue-draggable': draggable
+  },
 
   events: ['on-close'],
 
   created () {
-    this.$root.$on('on-participate', (event) => {
+    this.$root.$on('on-participate-event', (event) => {
       this.onShow = true
       this.event = event
     })
   },
 
   beforeDestroy () {
-    this.$root.$off('on-participate')
+    this.$root.$off('on-edit-event')
+  },
+
+  computed: {
+    draggingInfo () {
+      return this.dragging ? 'under drag' : ''
+    }
   },
 
   data () {
     return {
       onShow: false,
-      event: {}
+      event: {},
+
+      id: 0,
+      guests: [],
+
+      dragging: false
     }
   },
 
   methods: {
+    removeAt (idx) {
+      this.guests.splice(idx, 1)
+    },
+
+    add () {
+      this.id++
+      this.guests.push({ id: this.id, name: '', relationShip: '' })
+    },
+
     onShowModal () {
       this.onShow = true
     },
@@ -68,6 +134,13 @@ export default {
 
     async confirm () {
       this.loading = true
+
+      // const subscription = {
+      //   idUser: localStorage.getItem('userId'),
+      //   guests: this.guests
+      // }
+
+      // await this.$axios.patch('/event/{id}'.replace('{id}', event.id), subscription)
 
       this.loading = false
 
@@ -82,96 +155,11 @@ export default {
 </script>
 
 <style lang="stylus">
-.cachorro
-  .check {
-    position: relative;
-    background: linear-gradient(-135deg, #4158d0, #c850c0);
-    line-height: 0;
-    perspective: 400px;
-  }
+.list-guest
+  list-style none
 
-  .check input[type="checkbox"],
-  .check label,
-  .check label::before,
-  .check label::after,
-  .check {
-    appearance: none;
-    display: inline-block;
-    border-radius: 1rem;
-    border: 0;
-    transition: .35s ease-in-out;
-    box-sizing: border-box;
-    cursor: pointer;
-  }
+  .q-field--focused .q-field__control
+    box-shadow: 0 1px 5px rgba(0,0,0,0.2), 0 2px 2px rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12);
+    background: #F2F2F2 !important
 
-  .check label {
-    width: 2.2rem;
-    height: 1rem;
-    background: #d7d7d7;
-    overflow: hidden;
-  }
-
-  .check input[type="checkbox"] {
-    position: absolute;
-    z-index: 1;
-    width: .8rem;
-    height: .8rem;
-    top: .1rem;
-    left: .1rem;
-    background: linear-gradient(45deg, #dedede, #ffffff);
-    box-shadow: 0 6px 7px rgba(0,0,0,0.3);
-    outline: none;
-  }
-
-  .check input[type="checkbox"]:checked {
-    left: 1.3rem;
-  }
-
-  .check input[type="checkbox"]:checked + label {
-    background: transparent;
-  }
-
-  .check label::before,
-  .check label::after {
-    content: "· ·";
-    position: absolute;
-    overflow: hidden;
-    left: .15rem;
-    top: .5rem;
-    height: 1rem;
-    letter-spacing: -.04rem;
-    color: #9b9b9b;
-    font-family: "Times New Roman", serif;
-    z-index: 2;
-    font-size: .6rem;
-    border-radius: 0;
-    transform-origin: 0 0 -.5rem;
-    backface-visibility: hidden;
-  }
-
-  .check label::after {
-    content: "●";
-    top: .65rem;
-    left: .3rem;
-    height: .1rem;
-    width: .35rem;
-    font-size: .2rem;
-    transform-origin: 0 0 -.4rem;
-  }
-
-  .check input[type="checkbox"]:checked + label::before,
-  .check input[type="checkbox"]:checked + label::after {
-    left: 1.55rem;
-    top: .4rem;
-    line-height: .1rem;
-    transform: rotateY(360deg);
-  }
-
-  .check input[type="checkbox"]:checked + label::after {
-    height: .16rem;
-    top: .55rem;
-    left: 1.6rem;
-    font-size: .6rem;
-    line-height: 0;
-  }
 </style>

@@ -17,7 +17,7 @@
 
             <q-item clickable>
               <q-item-section>
-                <a href="/login" style="  display: block; text-decoration: none; white-space: nowrap; cursor: pointer; color: #6F6F6F;">
+                <a href="/events" style="  display: block; text-decoration: none; white-space: nowrap; cursor: pointer; color: #6F6F6F;">
                   Inicio
                 </a>
               </q-item-section>
@@ -25,18 +25,10 @@
 
             <q-item clickable>
              <q-item-section>
-                <a href="/login" style="  display: block; text-decoration: none; white-space: nowrap; cursor: pointer; color: #6F6F6F;">
-                  Meus Eventos
+                <a href="/managerevents" style="  display: block; text-decoration: none; white-space: nowrap; cursor: pointer; color: #6F6F6F;">
+                  Gerenciar meus Eventos
                 </a>
              </q-item-section>
-            </q-item>
-
-            <q-item clickable>
-              <q-item-section>
-                <a href="/login" style="  display: block; text-decoration: none; white-space: nowrap; cursor: pointer; color: #6F6F6F;">
-                  Meus Convidados
-                </a>
-              </q-item-section>
             </q-item>
             <q-separator />
 
@@ -62,9 +54,6 @@ import { EventBus } from '../functions/event_bus.js'
 
 export default {
   name: 'MainLayout',
-
-  components: {
-  },
 
   created () {
     if (!localStorage.getItem('access_token')) {
@@ -92,6 +81,10 @@ export default {
   methods: {
     logoutNow () {
       this.$q.localStorage.remove('access_token')
+      this.$q.localStorage.remove('userId')
+      this.$q.localStorage.remove('userName')
+      this.$q.localStorage.remove('userProfile')
+      this.$q.localStorage.remove('userDepartament')
       this.$router.push('/')
     },
 

@@ -1,7 +1,8 @@
 <template>
   <div class="q-pa-md">
     <q-table
-      title="Eventos"
+      :title="title || 'Eventos'"
+      style="min-height: 80vmin"
       row-key="name"
       :data="data"
       :columns="columns"
@@ -27,6 +28,7 @@
             :description="props.row.description"
             :date="props.row.dateInitial"
             :data="props.row"
+            :isOnwer="isOnwer"
           />
         </div>
       </template>
@@ -65,6 +67,19 @@ export default {
     'card-events': CardEvents
   },
 
+  props: {
+    title: {
+      type: String
+    },
+    endpoint: {
+      type: String
+    },
+    isOnwer: {
+      type: Boolean,
+      default: false
+    }
+  },
+
   data () {
     return {
       filter: '',
@@ -82,14 +97,14 @@ export default {
         { name: 'description', align: 'center', label: 'description', field: 'description', sortable: true }
       ],
       data: [
-        {
-          name: 'Festa de 21 anos Landix',
-          description: 'Festa que vai acontecer em 2021, uma comemoração estonteante, que vai ser muito legal a presença de quem é colaborador e seus familiares',
-          dateInitial: '2020-03-29T02:46:45.475Z',
-          dateEnd: '2020-03-29T02:46:45.475Z',
-          place: 'string',
-          eventOrganizerId: 0
-        }
+        // {
+        //   // name: 'Festa de 21 anos Landix',
+        //   // description: 'Festa que vai acontecer em 2021, uma comemoração estonteante, que vai ser muito legal a presença de quem é colaborador e seus familiares',
+        //   // dateInitial: '29-03-2020 12:30',
+        //   // dateEnd: '29-03-2020 17:30',
+        //   // place: 'Rua Lapa do Lobo, 350',
+        //   // eventOrganizerId: 0
+        // }
       ]
     }
   },
@@ -102,13 +117,18 @@ export default {
     async getEvents () {
       try {
         this.loading = true
-        const result = await this.$axios.get('/event')
+        const result = await this.$axios.get(this.endpoint, this.dataEndpoint)
         console.log('Olha isso: ', result)
+        this.data = result.data
         this.loading = false
       } catch (e) {
         this.loading = false
         console.log(e)
       }
+    },
+
+    refresh () {
+      this.getEvents()
     }
   }
 }
@@ -119,6 +139,7 @@ export default {
   margin: 2rem
   border-radius: 15px
   width: 20%
+  height 216px
   transition .3s
   box-shadow: 0 1px 2px rgba(0,0,0,0.12), 0 1px 1px rgba(0,0,0,0.24);
 

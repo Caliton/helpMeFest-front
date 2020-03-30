@@ -259,6 +259,9 @@ export default {
         var response = await this.$axios.post('/user/login/', this.user)
         localStorage.setItem('access_token', response.data.token)
         localStorage.setItem('userName', response.data.name)
+        localStorage.setItem('userId', response.data.id)
+        localStorage.setItem('userProfile', response.data.profileId)
+        localStorage.setItem('userDepartament', response.data.departamentId)
 
         this.$router.push('/events')
 

@@ -9,7 +9,9 @@ const routes = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '/events', name: 'events', component: () => import('pages/Index.vue') }
+      { path: '/events', name: 'events', component: () => import('pages/Index.vue') },
+      { path: '/managerevents', name: 'manage_events', component: () => import('pages/ManagerEvents.vue') },
+      { path: '/profile', name: 'profile', component: () => import('pages/Profile.vue') }
     ]
   }
 ]
