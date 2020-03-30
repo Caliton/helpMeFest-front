@@ -27,8 +27,6 @@ export default {
 
   methods: {
     refreshListEvents () {
-      console.log('oi fui executado')
-
       this.$refs.listEvents.refresh()
     }
   }

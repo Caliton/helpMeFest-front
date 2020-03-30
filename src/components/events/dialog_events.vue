@@ -40,7 +40,7 @@
             </q-input>
 
             <q-input
-              v-model="element.relationShip"
+              v-model="element.relantionship"
               style="max-width: 200px;"
               class="col-md-3"
               input-style="color: #6F6F6F;"
@@ -123,7 +123,7 @@ export default {
 
     add () {
       this.id++
-      this.guests.push({ id: this.id, name: '', relationShip: '', relatedUserId: this.userId, enumCrud: 67 })
+      this.guests.push({ id: this.id, name: '', relantionship: '', relatedUserId: this.userId, enumCrud: 67 })
     },
 
     onShowModal (event) {
@@ -139,7 +139,6 @@ export default {
       try {
         this.event = events
         const result = await this.$axios.get(`/Event/${events.id}?userId=${this.userId}`)
-        console.log('result: ', result.data.guests)
         this.guests = result.data.guests
       } catch (error) {
         console.log(error)
@@ -157,7 +156,6 @@ export default {
 
       subscription.guests = this.guests
       subscription.currentUserId = this.userId
-      console.log('bora ve', subscription)
 
       await this.$axios.put('/event/{id}'.replace('{id}', this.event.id), subscription)
 
