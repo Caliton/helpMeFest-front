@@ -11,7 +11,8 @@
     "lint": "eslint --ext .js,.vue src",
     "test": "echo \"No test specified\" && exit 0",
     "build:prod": "cross-env MY_API=http://localhost:5000/api/ quasar build",
-    "build:test": "cross-env MY_API=http://falta_ambiente_de_teste/ quasar build"
+    "build:test": "cross-env MY_API=http://falta_ambiente_de_teste/ quasar build",
+    "deploy": "push-dir --dir=dist/spa --remote=gh-pages --branch=master"
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
@@ -35,7 +36,8 @@
     "eslint-plugin-node": "^11.0.0",
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
-    "eslint-plugin-vue": "^6.1.2"
+    "eslint-plugin-vue": "^6.1.2",
+    "push-dir": "^0.4.1"
   },
   "engines": {
     "node": ">= 10.18.1",
