@@ -1,17 +1,13 @@
 <template>
-  <q-dialog
-    v-model="onShow"
-    transition-show="scale"
-    transition-hide="scale"
-    persistent
-  >
+  <q-dialog v-model="onShow" persistent>
     <q-card style="width: 1000px; max-width: 80vw; max-height: 80vh; height: auto" class="cachorro">
       <q-card-section >
-
+        <q-btn class="float-right" icon="close" flat round dense @click="canceled" />
+        <div class="text-overline" >Convidados do(a) <span style="font-size: 1rem">{{user.name }}</span></div>
       </q-card-section>
 
       <q-card-section>
-        <q-btn class="btn btn-secondary button q-ma-sm" @click="add" no-caps color="cyan" size="sm" rounded label="Adicionar Convidado" />
+        <q-btn class="btn btn-secondary button q-ma-sm" no-caps color="cyan" size="sm" rounded label="Adicionar Convidado" @click="add"/>
         <vue-draggable tag="ul" :list="guests" style="width: 100%" class="list-guest" handle=".handle">
           <li
             class="item-guest row"
@@ -25,12 +21,12 @@
               color="primary"
               filled
               dense
-              label="Convidado"
+              placeholder="Convidado"
               lazy-rules
               :rules="[ val => val && val.length > 0 || 'Preencha com o nome de seu convidado']"
             >
               <template v-slot:prepend>
-                <q-icon name="eva-people" style="color: #6F6F6F !important" />
+                <q-icon name="eva-person" style="color: #6F6F6F !important" />
               </template>
             </q-input>
 
@@ -60,48 +56,106 @@
         <q-btn color="light-blue" dense no-caps label="Salvar!" @click="confirm" />
       </q-card-actions>
     </q-card>
-  </q-dialog>
+</q-dialog>
 </template>
 
 <script>
-import { EventBus } from 'src/functions/event_bus.js'
+import draggable from 'vuedraggable'
+import { OPERATION } from '../../enumerator/operation'
 
 export default {
   name: 'dialog-guests',
+
+  components: {
+    'vue-draggable': draggable
+  },
+
   data () {
     return {
-      onShow: false
+      onShow: false,
+      event: {},
+      guests: [],
+      guestsExcludeds: [],
+      id: 0,
+      idFront: 0,
+      userId: 0,
+      user: {},
+      dragging: false
     }
-  },
-
-  created () {
-    EventBus.$on('on-participate-event', (event) => {
-      this.event = event
-      this.onShowModal()
-    })
-  },
-
-  beforeDestroy () {
-    EventBus.$off('on-participate-event')
   },
 
   methods: {
-    onShowModal () {
+    onShowDialog  (guestsFilters, event, user) {
+      this.event = event
+      this.guests = guestsFilters
       this.onShow = true
+      this.userId = user.userId
+
+      this.user = user
+      this.getGuests(event)
     },
 
-    onHideModal () {
+    onHideDialog () {
+      this.resetVariables()
       this.onShow = false
     },
 
-    confirm () {
-      this.onHideModal()
+    async getGuests (events) {
+      try {
+        this.event = events
+        const result = await this.$axios.get(`/Event/${events.id}?userId=${this.userId}`)
+        this.guests = result.data.guests
+        this.id = this.guests.length
+      } catch (error) {
+        console.log(error)
+      }
+    },
+
+    async confirm () {
+      this.loading = true
+
+      this.guestsExcludeds.forEach((item, i) => {
+        this.guestsExcludeds[i].enumCrud = OPERATION.delete
+      })
+
+      const sendGuest = [...this.guests, ...this.guestsExcludeds]
+
+      const subscription = this.event
+
+      subscription.guests = sendGuest
+      subscription.currentUserId = this.userId
+
+      await this.$axios.put('/event/{id}'.replace('{id}', this.event.id), subscription)
+
+      this.loading = false
+
+      this.onHideDialog()
+    },
+
+    add () {
+      this.idFront++
+      this.guests.push({ idFront: this.idFront, id: 0, name: '', relationship: '', relatedUserId: this.userId, enumCrud: OPERATION.create })
+    },
+
+    removeAt (idx) {
+      this.guestsExcludeds.push(this.guests.splice(idx, 1)[0])
+    },
+
+    canceled () {
+      this.onHideDialog()
+    },
+
+    resetVariables () {
+      this.event = {}
+      this.guests = []
+      this.guestsExcludeds = []
+      this.id = 0
+      this.idFront = 0
     }
   }
-
 }
 </script>
 
-<style lang="stylus">
+<style>
 
 </style>

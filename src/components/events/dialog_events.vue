@@ -28,8 +28,8 @@
               input-style="color: #6F6F6F;"
               color="primary"
               filled
+              placeholder="Convidado"
               dense
-              label="Convidado"
               lazy-rules
               :rules="[ val => val && val.length > 0 || 'Preencha com o nome de seu convidado']"
             >
@@ -46,7 +46,7 @@
               color="primary"
               dense
               filled
-              label="relação"
+              placeholder="Relação"
               lazy-rules
               :rules="[ val => val && val.length > 0 || 'Preencha com o nome de seu convidado']"
             >
@@ -93,7 +93,7 @@ export default {
   },
 
   beforeDestroy () {
-    EventBus.$off('on-participate-event')
+    EventBus.$off('on-participate-event', this.event)
   },
 
   computed: {
@@ -127,6 +127,7 @@ export default {
     },
 
     onShowModal (event) {
+      this.event = Object.assign({}, event)
       this.onShow = true
     },
 

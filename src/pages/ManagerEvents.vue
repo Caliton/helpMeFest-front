@@ -4,14 +4,14 @@
       <list-events isManager ref="listEvents" title="Gerenciar meus Eventos" :endpoint="`/event/eventsByOwner/${idUser}`" :isOnwer="true" />
     </div>
     <dialog-events @on-close="refreshListEvents"/>
-    <dialog-guests />
+    <dialog-users />
   </q-page>
 </template>
 
 <script>
 import ListEvents from '../components/events/list_events.vue'
 import DialogEvents from '../components/manage_events/dialog_events.vue'
-import DialogGuests from '../components/manage_events/dialog_guests.vue'
+import DialogUsers from '../components/manage_events/dialog_users.vue'
 
 export default {
   name: 'manager-events',
@@ -19,7 +19,7 @@ export default {
   components: {
     'list-events': ListEvents,
     'dialog-events': DialogEvents,
-    'dialog-guests': DialogGuests
+    'dialog-users': DialogUsers
   },
 
   data () {

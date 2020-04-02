@@ -12,8 +12,8 @@
 
     <q-card-actions v-if="!isOnwer" align="right" style="padding: 1rem; padding-right: 1.5rem" class="absolute-bottom-right">
       <div class="check" style="transform: scale(1.8);" @click="openDetailsEvent">
-        <input id="check" type="checkbox" v-model="isParticipate">
-        <label for="check"></label>
+        <input :id="`check-${data.id}`" type="checkbox" v-model="isParticipate">
+        <label :for="`check-${data.id}`"></label>
         <q-tooltip v-if="!isParticipate" anchor="bottom right" self="top right">
           ZzzZZzz..zZzz.
         </q-tooltip>
@@ -158,7 +158,7 @@ export default {
     },
 
     cancelParticipate () {
-      EventBus.$emit('on-cancel-participate', this.data)
+      EventBus.$emit('on-leave-event', this.data)
     }
   }
 }

@@ -122,7 +122,7 @@ export default {
   },
 
   beforeDestroy () {
-    EventBus.$off('on-edit-event')
+    EventBus.$off('on-edit-event', this.event)
     EventBus.$off('on-create-event')
   },
 

@@ -14,6 +14,11 @@
         <div class="col-6 q-table__title">{{title || 'Eventos'}}</div>
 
         <div class="col-6">
+
+          <q-input class="float-right q-ml-lg" dense filled debounce="300" v-model="filter" placeholder="Search" style="max-width: 40%">
+            <q-icon slot="append" name="search" />
+          </q-input>
+
           <q-btn v-if="isManager" class="float-right" color="deep-purple-6" rounded no-caps label="Adicionar Eventos" @click="addEvents"/>
         </div>
       </template>
@@ -23,13 +28,6 @@
           <q-icon slot="append" name="search" />
         </q-input>
       </template>
-      <!-- <template v-slot:top-right>
-        <q-input borderless dense debounce="300" v-model="filter" placeholder="Pesquisar">
-          <template v-slot:append>
-            <q-icon name="search" />
-          </template>
-        </q-input>
-      </template> -->
 
       <template v-slot:item="props">
         <div
@@ -39,6 +37,7 @@
             :title="props.row.name"
             :description="props.row.description"
             :date="props.row.dateInitial"
+            :isParticipateProp="props.row.isParticipating"
             :data="props.row"
             :isOnwer="isOnwer"
           />
@@ -92,12 +91,16 @@ export default {
     EventBus.$on('on-delete-event', (event) => {
       this.deleteEvent(event)
     })
+
+    EventBus.$on('on-leave-event', (event) => {
+      this.leaveEvent(event)
+    })
   },
 
   beforeDestroy () {
-    EventBus.$off('on-save-event')
-    EventBus.$off('on-update-event')
+    EventBus.$off('on-save-event', this.event)
     EventBus.$off('on-delete-event')
+    EventBus.$off('on-leave-event')
   },
 
   props: {
@@ -126,7 +129,7 @@ export default {
       loading: false,
       columns: [
         {
-          name: 'title',
+          name: 'name',
           required: true,
           label: 'Titulo',
           align: 'left',
@@ -134,18 +137,10 @@ export default {
           format: val => `${val}`,
           sortable: true
         },
-        { name: 'description', align: 'center', label: 'description', field: 'description', sortable: true }
+        { name: 'description', align: 'center', label: 'description', field: 'description', sortable: true },
+        { name: 'isParticipating', align: 'center', label: 'isParticipating', field: 'isParticipating', sortable: true }
       ],
-      data: [
-        // {
-        //   // name: 'Festa de 21 anos Landix',
-        //   // description: 'Festa que vai acontecer em 2021, uma comemoração estonteante, que vai ser muito legal a presença de quem é colaborador e seus familiares',
-        //   // dateInitial: '29-03-2020 12:30',
-        //   // dateEnd: '29-03-2020 17:30',
-        //   // place: 'Rua Lapa do Lobo, 350',
-        //   // eventOrganizerId: 0
-        // }
-      ]
+      data: []
     }
   },
 
@@ -174,6 +169,8 @@ export default {
         this.loading = true
         this.data = []
         const result = await this.$axios.get(this.endpoint, this.dataEndpoint)
+        console.log('Lista de Eventos: ', result.data)
+
         this.data = result.data
 
         this.loading = false
@@ -199,6 +196,18 @@ export default {
 
         this.getEvents()
 
+        this.loading = false
+      } catch (e) {
+        console.log(e)
+        this.loading = false
+      }
+    },
+
+    async leaveEvent (event) {
+      try {
+        this.loading = true
+
+        await this.$axios.post(`userevent/leaveevent/${event.id}?userId=${localStorage.getItem('userId')}`)
         this.loading = false
       } catch (e) {
         console.log(e)
