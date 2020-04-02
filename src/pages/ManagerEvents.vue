@@ -1,22 +1,25 @@
 <template>
   <q-page class="flex flex-center">
     <div class="events-page">
-      <list-events ref="listEvents" title="Gerenciar meus Eventos" :endpoint="`/event/eventsByOwner/${idUser}`" :isOnwer="true" />
+      <list-events isManager ref="listEvents" title="Gerenciar meus Eventos" :endpoint="`/event/eventsByOwner/${idUser}`" :isOnwer="true" />
     </div>
     <dialog-events @on-close="refreshListEvents"/>
+    <dialog-guests />
   </q-page>
 </template>
 
 <script>
 import ListEvents from '../components/events/list_events.vue'
 import DialogEvents from '../components/manage_events/dialog_events.vue'
+import DialogGuests from '../components/manage_events/dialog_guests.vue'
 
 export default {
   name: 'manager-events',
 
   components: {
     'list-events': ListEvents,
-    'dialog-events': DialogEvents
+    'dialog-events': DialogEvents,
+    'dialog-guests': DialogGuests
   },
 
   data () {

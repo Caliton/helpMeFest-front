@@ -1,7 +1,7 @@
 <template>
   <q-card class="my-card">
     <q-card-section horizontal :class="{'my-card-participate': isParticipate}" flat bordered @click="openDetailsEventParticipate">
-      <q-card-section>
+      <q-card-section style="min-height: 166px; max-height: 167px">
         <div class="text-overline"><q-icon size="sm" name="event" /> {{date | moment("DD-MM-YYYY, h:mm:ss a")}}</div>
         <div class="text-h5 q-mt-sm q-mb-xs">{{ title || 'Aqui fica o Título'}}</div>
         <div class="text-caption text-grey">
@@ -33,12 +33,21 @@
 
     <q-card-actions v-if="isOnwer" align="right">
       <q-btn
-        label="Editar"
+        icon="eva-trash-2-outline"
         no-caps
-        rounded
-        color="purple"
+        flat
+        style="background-color: none; color: #e74c3c; box-shadow: none !important"
+        @click="openExcludeEvent"
+      />
+
+      <q-btn
+        icon="eva-edit-2-outline"
+        no-caps
+        flat
+        style="background-color: none; color: #9b59b6"
         @click="openEditEvent"
       />
+
     </q-card-actions>
 
     <q-dialog v-model="invite" persistent>
@@ -51,6 +60,20 @@
         <q-card-actions align="right">
           <q-btn flat no-caps label="Vou pensar melhor..." color="grey" v-close-popup @click="isParticipate = true" />
           <q-btn flat no-caps label="Não quero mais!" color="negative" @click="cancelParticipate" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <q-dialog v-model="showDelete" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-icon size="2em" name="thumb_down" color="red"/>
+          <span class="q-ml-sm">Deseja mesmo acabar com o Evento?</span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat no-caps label="Vou pensar melhor..." color="grey" v-close-popup @click="isParticipate = true" />
+          <q-btn flat no-caps label="Sim, não quero mais!" color="red" @click="excludeEvent" v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -98,7 +121,8 @@ export default {
   data () {
     return {
       isParticipate: this.data.isParticipating,
-      invite: false
+      invite: false,
+      showDelete: false
     }
   },
 
@@ -119,6 +143,14 @@ export default {
 
     openEditEvent () {
       EventBus.$emit('on-edit-event', this.data)
+    },
+
+    openExcludeEvent () {
+      this.showDelete = true
+    },
+
+    excludeEvent () {
+      EventBus.$emit('on-delete-event', this.data)
     },
 
     openDetailsEventParticipate () {

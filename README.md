@@ -1,5 +1,5 @@
 # helpMeFest-front
-Frontend do Sistema de Gerenciamento de Eventos
+Frontend do Sistema de Gerenciamento de Eventos e Divulgação
 
 
 # Passos para executar front:

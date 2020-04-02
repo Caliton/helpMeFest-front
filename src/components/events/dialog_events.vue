@@ -20,16 +20,15 @@
           <li
             class="item-guest row"
             v-for="(element, idx) in guests"
-            :key="element.id"
+            :key="element.idFront"
           >
             <q-input
               class="col-md-6 q-mr-sm"
               v-model="element.name"
               input-style="color: #6F6F6F;"
               color="primary"
-              rounded
+              filled
               dense
-              standout="bg-grey-3 text-black"
               label="Convidado"
               lazy-rules
               :rules="[ val => val && val.length > 0 || 'Preencha com o nome de seu convidado']"
@@ -40,14 +39,13 @@
             </q-input>
 
             <q-input
-              v-model="element.relantionship"
+              v-model="element.relationship"
               style="max-width: 200px;"
               class="col-md-3"
               input-style="color: #6F6F6F;"
               color="primary"
-              rounded
               dense
-              standout="bg-grey-3 text-black"
+              filled
               label="relação"
               lazy-rules
               :rules="[ val => val && val.length > 0 || 'Preencha com o nome de seu convidado']"
@@ -75,6 +73,7 @@
 <script>
 import draggable from 'vuedraggable'
 import { EventBus } from 'src/functions/event_bus.js'
+import { OPERATION } from '../../enumerator/operation'
 
 export default {
   name: 'dialog-events',
@@ -107,9 +106,10 @@ export default {
     return {
       onShow: false,
       event: {},
-
-      id: 0,
       guests: [],
+      guestsExcludeds: [],
+      id: 0,
+      idFront: 0,
       userId: localStorage.getItem('userId'),
 
       dragging: false
@@ -117,13 +117,13 @@ export default {
   },
 
   methods: {
-    removeAt (idx) {
-      this.guests.splice(idx, 1)
+    add () {
+      this.idFront++
+      this.guests.push({ idFront: this.idFront, id: 0, name: '', relationship: '', relatedUserId: this.userId, enumCrud: 67 })
     },
 
-    add () {
-      this.id++
-      this.guests.push({ id: this.id, name: '', relantionship: '', relatedUserId: this.userId, enumCrud: 67 })
+    removeAt (idx) {
+      this.guestsExcludeds.push(this.guests.splice(idx, 1)[0])
     },
 
     onShowModal (event) {
@@ -132,6 +132,7 @@ export default {
 
     onHideModal () {
       this.$emit('on-close')
+      this.resetVariables()
       this.onShow = false
     },
 
@@ -140,6 +141,7 @@ export default {
         this.event = events
         const result = await this.$axios.get(`/Event/${events.id}?userId=${this.userId}`)
         this.guests = result.data.guests
+        this.id = this.guests.length
       } catch (error) {
         console.log(error)
       }
@@ -148,13 +150,15 @@ export default {
     async confirm () {
       this.loading = true
 
-      this.guests.forEach((item, i) => {
-        this.guests[i].id = 0
+      this.guestsExcludeds.forEach((item, i) => {
+        this.guestsExcludeds[i].enumCrud = OPERATION.delete
       })
+
+      const sendGuest = [...this.guests, ...this.guestsExcludeds]
 
       const subscription = this.event
 
-      subscription.guests = this.guests
+      subscription.guests = sendGuest
       subscription.currentUserId = this.userId
 
       await this.$axios.put('/event/{id}'.replace('{id}', this.event.id), subscription)
@@ -166,6 +170,14 @@ export default {
 
     canceled () {
       this.onHideModal()
+    },
+
+    resetVariables () {
+      this.event = {}
+      this.guests = []
+      this.guestsExcludeds = []
+      this.id = 0
+      this.idFront = 0
     }
   }
 }

@@ -5,7 +5,7 @@
     transition-hide="scale"
     persistent
   >
-    <q-card style="width: 1000px; max-width: 80vw;" class="cachorro">
+    <q-card style="width: 1000px; max-width: 80vw; max-height: 80vh; height: auto" class="cachorro">
       <q-card-section >
         <q-btn class="float-right" icon="close" flat round dense @click="canceled" />
         <!-- <q-input outlined v-model="text" :dense="dense" /> -->
@@ -24,11 +24,13 @@
 
         <div class="row">
           <q-input
-            class="col-md-12"
+            class="col-md-10"
             filled
             v-model="event.description"
             placeholder="Descrição do Evento"
             dense
+            type="textarea"
+            :maxlength="500"
             lazy-rules
             :rules="[ val => val && val.length > 0 || 'Dê um titulo para o seu ']"
           />
@@ -36,18 +38,22 @@
 
         <div class="row">
           <q-input
-            class="col-md-6"
+            class="col-md-10"
             filled
             v-model="event.place"
             placeholder="Endereço"
             dense
             lazy-rules
             :rules="[ val => val && val.length > 0 || 'Dê um titulo para o seu ']"
-          />
+          >
+            <template v-slot:prepend>
+              <q-icon name="map" style="color: #6F6F6F !important" />
+            </template>
+          </q-input>
         </div>
 
         <div class="row">
-          <q-input filled dense v-model="event.dateInitial" class="col-md-4 q-mr-sm">
+          <q-input filled dense v-model="event.dateInitial" class="col-md-4 q-mr-sm" placeholder="Começo do Evento">
             <template v-slot:prepend>
               <q-icon name="event" class="cursor-pointer">
                 <q-popup-proxy transition-show="scale" transition-hide="scale">
@@ -65,7 +71,7 @@
             </template>
           </q-input>
 
-          <q-input filled dense v-model="event.dateEnd" class="col-md-4 q-mr-sm">
+          <q-input filled dense v-model="event.dateEnd" class="col-md-4 q-mr-sm" placeholder="Final do Evento">
             <template v-slot:prepend>
               <q-icon name="event" class="cursor-pointer">
                 <q-popup-proxy transition-show="scale" transition-hide="scale">
@@ -85,8 +91,9 @@
         </div>
       </q-card-section>
 
-      <q-card-section>
+      <q-card-section >
       </q-card-section>
+
       <q-card-actions style="margin: 10px;" class="text-teal container-card absolute-bottom-right">
         <q-btn color="light-blue" dense no-caps label="Salvar!" @click="confirm" />
       </q-card-actions>
@@ -108,10 +115,15 @@ export default {
       this.onShow = true
       this.event = event
     })
+
+    EventBus.$on('on-create-event', () => {
+      this.onShow = true
+    })
   },
 
   beforeDestroy () {
     EventBus.$off('on-edit-event')
+    EventBus.$off('on-create-event')
   },
 
   computed: {
@@ -125,15 +137,13 @@ export default {
       onShow: false,
       event: {
         name: '',
-        description: '',
         dateInitial: '',
         dateEnd: '',
+        description: '',
         place: '',
         eventOrganizerId: 0,
         guests: []
-      },
-      dragging: false
-
+      }
     }
   },
 
@@ -157,17 +167,19 @@ export default {
     },
 
     async confirm () {
-      this.loading = true
+      this.event.dateInitial = this.$moment(this.event.dateEnd, 'YYYY-MM-DD, h:mm:ss')
+      this.event.dateEnd = this.$moment(this.event.dateEnd, 'YYYY-MM-DD, h:mm:ss')
+      this.event.eventOrganizerId = localStorage.getItem('userId')
 
-      // const subscription = {
-      //   idUser: localStorage.getItem('userId'),
-      //   guests: this.guests
-      // }
+      this.event.eventOrganizer = localStorage.getItem('userId')
+      this.event.currentUserId = localStorage.getItem('userId')
 
-      // await this.$axios.patch('/event/{id}'.replace('{id}', event.id), subscription)
+      this.event.isParticipating = true
 
-      this.loading = false
-
+      this.event.guests = []
+      this.event.people = []
+      this.event.users = []
+      EventBus.$emit('on-save-event', this.event)
       this.onHideModal()
     },
 

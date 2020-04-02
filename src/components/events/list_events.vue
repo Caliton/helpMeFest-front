@@ -1,7 +1,6 @@
 <template>
   <div class="q-pa-md">
     <q-table
-      :title="title || 'Eventos'"
       style="min-height: 80vmin"
       row-key="name"
       :data="data"
@@ -11,13 +10,26 @@
       :loading="loading"
       grid
     >
+      <template v-slot:top>
+        <div class="col-6 q-table__title">{{title || 'Eventos'}}</div>
+
+        <div class="col-6">
+          <q-btn v-if="isManager" class="float-right" color="deep-purple-6" rounded no-caps label="Adicionar Eventos" @click="addEvents"/>
+        </div>
+      </template>
+
       <template v-slot:top-right>
+        <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
+          <q-icon slot="append" name="search" />
+        </q-input>
+      </template>
+      <!-- <template v-slot:top-right>
         <q-input borderless dense debounce="300" v-model="filter" placeholder="Pesquisar">
           <template v-slot:append>
             <q-icon name="search" />
           </template>
         </q-input>
-      </template>
+      </template> -->
 
       <template v-slot:item="props">
         <div
@@ -60,6 +72,9 @@
 <script>
 import CardEvents from './card_events.vue'
 
+import { OPERATION } from 'src/enumerator/operation.js'
+import { EventBus } from 'src/functions/event_bus.js'
+
 export default {
   name: 'list-events',
 
@@ -67,14 +82,39 @@ export default {
     'card-events': CardEvents
   },
 
+  created () {
+    EventBus.$on('on-save-event', (event) => {
+      this.onShow = true
+      this.event = event
+      this.registerEvents(event)
+    })
+
+    EventBus.$on('on-delete-event', (event) => {
+      this.deleteEvent(event)
+    })
+  },
+
+  beforeDestroy () {
+    EventBus.$off('on-save-event')
+    EventBus.$off('on-update-event')
+    EventBus.$off('on-delete-event')
+  },
+
   props: {
     title: {
       type: String
     },
+
     endpoint: {
       type: String
     },
+
     isOnwer: {
+      type: Boolean,
+      default: false
+    },
+
+    isManager: {
       type: Boolean,
       default: false
     }
@@ -114,6 +154,21 @@ export default {
   },
 
   methods: {
+    refresh () {
+      this.getEvents()
+    },
+
+    addEvents () {
+      EventBus.$emit('on-create-event')
+    },
+
+    saveEvents () {
+      const value = {
+        operation: OPERATION.create
+      }
+      this.registerEvents(value)
+    },
+
     async getEvents () {
       try {
         this.loading = true
@@ -128,8 +183,39 @@ export default {
       }
     },
 
-    refresh () {
-      this.getEvents()
+    async registerEvents (event) {
+      try {
+        let axiosFunction = this.$axios.post
+        let url = '/event/'
+
+        if (event.id) {
+          url += `${event.id}/`
+          axiosFunction = this.$axios.put
+        }
+
+        this.loading = true
+
+        await axiosFunction(url, event)
+
+        this.getEvents()
+
+        this.loading = false
+      } catch (e) {
+        console.log(e)
+        this.loading = false
+      }
+    },
+
+    async deleteEvent (event) {
+      try {
+        this.loading = true
+        await this.$axios.delete(`/event/${event.id}`)
+        this.getEvents()
+        this.loading = false
+      } catch (e) {
+        this.loading = false
+        console.log(e)
+      }
     }
   }
 }
