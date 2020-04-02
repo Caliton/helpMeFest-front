@@ -169,7 +169,6 @@ export default {
         this.loading = true
         this.data = []
         const result = await this.$axios.get(this.endpoint, this.dataEndpoint)
-        console.log('Lista de Eventos: ', result.data)
 
         this.data = result.data
 
